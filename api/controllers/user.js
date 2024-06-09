@@ -78,9 +78,9 @@ const registerUser = async (req, res, next) => {
         <p>Email: ${addUser.email}</p>
         <p>Socio: ${addUser.member}</p>
         <hr></hr>
-        <p><a class=" link" href="http://localhost:3000/users/verifyuser/${addUser.email}/${process.env.REG_PASSWORD}" target="_blank" rel="noopener noreferrer">
+        <p><a class=" link" href="https://sotopoolback-production.up.railway.app/users/verifyuser/${addUser.email}/${process.env.REG_PASSWORD}" target="_blank" rel="noopener noreferrer">
           Aceptar</a></p>
-        <p><a class=" link" href="http://localhost:3000/users/verifyuser/${addUser.email}/${process.env.REG_PASSWORD}" target="_blank" rel="noopener noreferrer">
+        <p><a class=" link" href="https://sotopoolback-production.up.railway.app/users/verifyuser/${addUser.email}/${process.env.REG_PASSWORD}" target="_blank" rel="noopener noreferrer">
           Rechazar</a></p>
         `,
         attachments: [
