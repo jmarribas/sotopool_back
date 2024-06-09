@@ -1,6 +1,6 @@
 const { isAdmin, isUser } = require("../../middlewares/auth");
 const { upload } = require("../../middlewares/upload");
-const { getUsers, getUser, registerUser, loginUser, confirmUser, verifyUser, rejectUserPhoto } = require("../controllers/user");
+const { getUsers, getUser, registerUser, loginUser, confirmUser, verifyUser, rejectUserPhoto, rejectUserDates } = require("../controllers/user");
 
 const userRoutes = require('express').Router();
 
@@ -11,5 +11,6 @@ userRoutes.post('/login', loginUser);
 userRoutes.post('/confirmuser/:id/:token', isUser, confirmUser);
 userRoutes.get('/verifyuser/:email/:pass', verifyUser);
 userRoutes.get('/rejectuserphoto/:email/:pass', rejectUserPhoto);
+userRoutes.get('/rejectuserdates/:email/:pass', rejectUserDates);
 
 module.exports = userRoutes;

@@ -83,6 +83,8 @@ const registerUser = async (req, res, next) => {
           Aceptar</a></p>
         <p><a class=" link" href="https://sotopoolback-production.up.railway.app/users/rejectuserphoto/${addUser.email}/${process.env.REG_PASSWORD}" target="_blank" rel="noopener noreferrer">
           Rechazar por la foto</a></p>
+          <p><a class=" link" href="https://sotopoolback-production.up.railway.app/users/rejectuserdates/${addUser.email}/${process.env.REG_PASSWORD}" target="_blank" rel="noopener noreferrer">
+          Rechazar por que no coinciden los datos</a></p>
         `,
         attachments: [
           {
@@ -308,21 +310,6 @@ const verifyUser = async (req, res, next) => {
         console.log(error);
       } else {
         console.log('Email enviado: ' + info.response);
-        fs.unlink(req.files.img[0].path, function (err) {
-          if (err) {
-            console.error('Error al eliminar el archivo de imagen:', err);
-          } else {
-            console.log('Archivo de imagen eliminado con éxito');
-          }
-        });
-
-        fs.unlink(req.files.license[0].path, function (err) {
-          if (err) {
-            console.error('Error al eliminar el archivo de licencia:', err);
-          } else {
-            console.log('Archivo de licencia eliminado con éxito');
-          }
-        });
       }
     });
 
@@ -435,8 +422,8 @@ const rejectUserPhoto = async (req, res, next) => {
       </p>Necesitamos que tu cara esté centrada en la foto para que se vea bien.</p>
       <p>El espacio de la foto en el carnet es cuadrado, imagina como si fuera la foto de perfil de instagram o facebook. Aunque no sea una foto cuadrada necesitamos que tu cara se vea en el centro.</p> 
       vuelve a registrarte y sube una foto centrada para que podamos validarte:</p>
-      <a class=" link" href="https://www.sotodealcolea.com/register" target="_blank" rel="noopener noreferrer">
-          (Volver a registrarse)</a>
+      <p><a class=" link" href="https://www.sotodealcolea.com/register" target="_blank" rel="noopener noreferrer">
+          (Volver a registrarse)</a></p>
       <p>Gracias y disculpa las molestias.</p>
         <p>SotoPool</p>
         </div>
@@ -479,4 +466,149 @@ const rejectUserPhoto = async (req, res, next) => {
 
 }
 
-module.exports = { getUsers, getUser, registerUser, loginUser, confirmUser, verifyUser, rejectUserPhoto };
+// REJECT USER DATES
+const rejectUserDates = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ email: req.params.email });
+    const pass = req.params.pass;
+
+    if (pass !== process.env.REG_PASSWORD) {
+      return res.status(401).json({ error: 'Contraseña incorrecta.' });
+    }
+
+    if (!user || user === null) {
+      return res.status(404).json({ error: 'Usuario no encontrado.' });
+    }
+
+    let transporter = nodemailer.createTransport({
+      host: 'smtp-es.securemail.pro',
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.REG_EMAIL,
+        pass: process.env.REG_PASSWORD,
+      }
+    });
+
+    let mailOptions = {
+      from: `"SotoPool" <info@sotodealcolea.com>`,
+      to: user.email,
+      subject: `¡Lo sientimos! Cuenta no verificada.`,
+      html: `
+    <!DOCTYPE PUBLIC “-//W3C//DTD XHTML 1.0 Transitional//EN” “https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd”>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stage Roster - Register email</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    h1 {
+      color: #000000;
+      font-size: 24px;
+    }
+
+    p {
+      color: #555;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    a {
+      color: #000000;
+      text-decoration: none;
+    }
+
+    table {
+      text-align: center;
+      width: 92%;
+      margin: 0 auto;
+      background-color: #cfcfcf;
+      border-radius: 20px;
+      padding: 12px;
+    }
+
+    .verification-code {
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 20px;
+      display: inline-block;
+    }
+
+    .imgBackground {
+      height: 180px;
+    }
+  </style>
+</head>
+
+<body>
+  <table style="background: none; height: 120px">
+    <tr>
+      <td>
+        <img src="https://res.cloudinary.com/dbnmjx6vr/image/upload/v1709246885/Logo_SDA_reytxe.webp" alt="Logo" width="50"
+          height="50">
+        <h1>CDV Soto de Alcolea</h1>
+      </td>
+    </tr>
+  </table>
+  <table role="presentation">
+    <tr>
+      <td>
+        <h3>Lo sentimos ${user.name},</h3>
+        <p>¡Tu cuenta no ha posido ser verificada! te contamos por que:</p>
+      </p>Los datos de tu carnet físico con los datos que nos has proporcionado no coinciden. Revista tanto los datos como la fotografía. Este mensaje también te puede llegar si las fotografías no coinciden.</p>
+      <p>Por favor corrígelo y vuelve a registrarte para que podamos validarte:</p>
+      <p><a class=" link" href="https://www.sotodealcolea.com/register" target="_blank" rel="noopener noreferrer">
+          (Volver a registrarse)</a></p>
+      <p>Gracias y disculpa las molestias.</p>
+        <p>SotoPool</p>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <table style="background: none;">
+    <tr>
+      <td>
+        <a class=" link" href="https://www.sotodealcolea.com" target="_blank" rel="noopener noreferrer">
+          www.sotodealcolea.com</a>
+      </td>
+    </tr>
+  </table>
+</body>
+
+</html>
+      `
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email enviado: ' + info.response);
+      }
+    });
+
+    const userDeleted = await User.findByIdAndDelete(user._id);
+
+    if (userDeleted && userDeleted.img) {
+      deleteImg(userDeleted.img);
+    }
+
+    res.status(200).json({ message: `${user.name} ${user.surnames} ha sido eliminado correctamente.` });
+
+  } catch (err) {
+    return res.status(404).json({ error: err.message });
+  }
+
+}
+
+module.exports = { getUsers, getUser, registerUser, loginUser, confirmUser, verifyUser, rejectUserPhoto, rejectUserDates };
