@@ -21,7 +21,7 @@ const generateAndSaveCode = () => {
   console.log(`Código generado: ${code}`);
 }
 
-cron.schedule('* * * * *', generateAndSaveCode);
+cron.schedule('0 10 * * *', generateAndSaveCode);
 
 const getCodeFromFile = () => {
   try {
